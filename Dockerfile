@@ -19,12 +19,10 @@ RUN apt-get -qq update \
     && apt-get -qq install -y --no-install-recommends \
     ca-certificates \
     curl \
-    chromium \
     dirmngr \
     git-core \
     gnupg \
     htop \
-    ffmpeg \
     fonts-liberation2 \
     fonts-noto-cjk \
     locales \
@@ -43,17 +41,17 @@ RUN apt-get -qq update \
     python3-watchdog \
     python3-xlrd \
     python3-xlwt \
-    nano \
     ssh \
     # Add sudo support for the non-root user & unzip for CI
     sudo \
     unzip \
     vim \
     zip \
+    tree \
     xz-utils \
     && \
     if [ "$(uname -m)" = "aarch64" ]; then \
-        curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_arm64.deb \
+        curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtmltox_0.12.6.1-2.bullseye_arm64.deb \
     ; else \
         curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOX_VERSION}/wkhtmltox_${WKHTMLTOX_VERSION}-1.buster_amd64.deb \
         && echo "${WKHTMLTOPDF_CHECKSUM} wkhtmltox.deb" | sha1sum -c - \
@@ -112,7 +110,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Install Odoo source code and install it as a package inside the container with additional tools
-ENV ODOO_VERSION ${ODOO_VERSION:-15.0}
+ENV ODOO_VERSION ${ODOO_VERSION:-16.0}
 
 RUN pip3 install --prefix=/usr/local --no-cache-dir --upgrade --requirement https://raw.githubusercontent.com/odoo/odoo/${ODOO_VERSION}/requirements.txt \
     && pip3 -qq install --prefix=/usr/local --no-cache-dir --upgrade \
@@ -135,7 +133,7 @@ RUN pip3 install --prefix=/usr/local --no-cache-dir --upgrade --requirement http
     && apt-get autopurge -yqq \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
-RUN git clone --depth 100 -b ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo \
+RUN git clone --depth 1 -b ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo \
     && pip3 install --editable /opt/odoo \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
